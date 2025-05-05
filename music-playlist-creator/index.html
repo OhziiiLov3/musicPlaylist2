@@ -6,22 +6,46 @@
     
     <title>Music Playlist Explorer</title>
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
-    
-    <link rel="stylesheet" href="style.css">
+    <!-- font awesome -->
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  />
+    <link rel="stylesheet" href="/music-playlist-creator/styles.css">
+    <script defer src="/music-playlist-creator/script.js"></script>
 </head>
 <body>
-    <header>
-        <!-- Your header content here -->
-    </header>
+    <div class="container">
+        <header>
+            <!-- Your header content here -->
+             <div class="logo">
+                <h1 id="header-title">Ampd</h1>
+                <img src="./assets/img/waveform_9297281.png" alt="">
+             </div>
+            <nav class="navbar">
+                <ul class="nav-links">
+                    <li class="nav-items"><a href="/pages/featured.html">Featured</a></li>
+                    <li class="nav-items"><a href="index.html">Playlist</a></li>
+                </ul>
+                <button id="mode-toggle" aria-label="Toggle dark mode">
+                    <i class="fa-solid fa-moon"></i>
+                  </button>
+            </nav>
+        </header>
+        
+        <main> 
+            <!-- Your main content here -->
+             <h1>Music</h1>
+        </main>
+        
+        <footer class="footer">
+            <!-- Your footer content here -->
+            
+        </footer>
 
-    <main> 
-        <!-- Your main content here -->
-    </main>
+    </div>
 
-    <footer>
-        <!-- Your footer content here -->
-    </footer>
-    <script src="data/data.js"></script>
-    <script src="script.js"></script>
+        <script src="data/data.js"></script>
+       
 </body>
 </html>
