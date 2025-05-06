@@ -19,6 +19,15 @@ const playlistImage = document.getElementById("playlistImage");
 const playlistName = document.getElementById("playlistName");
 const playlistCreator = document.getElementById("playlistCreator");
 
+// Fetch JSON data
+fetch('data/data.json')
+  .then(response => response.json())
+  .then(data => {
+    const playlists = data.playlists; 
+    createPlaylistCards(playlists);
+  })
+  .catch(error => console.error('Error fetching data:', error));
+
 const createPlaylistCards = (playlists) => {
   const container = document.querySelector(".playlist-cards");
   playlists.forEach((playlist) => {
@@ -42,11 +51,33 @@ const createPlaylistCards = (playlists) => {
 
 
     card.addEventListener("click", () => {
-      playlistImage.src = playlist.playlist_art;
-      playlistName.textContent = playlist.playlist_name;
-      playlistCreator.textContent = `created by ${playlist.playlist_creator}`;
-      modal.style.display = "flex";
-    });
+        playlistImage.src = playlist.playlist_art;
+        playlistName.textContent = playlist.playlist_name;
+        playlistCreator.textContent = `created by ${playlist.playlist_creator}`;
+        modal.style.display = "flex";
+      
+        // Add playlist songs 
+        const modalBody = modal.querySelector(".modal-body");
+        modalBody.innerHTML = ""; 
+      
+        playlist.songs.forEach(song => {
+          const songItem = document.createElement("div");
+          songItem.classList.add("song-item");
+          songItem.innerHTML = `
+            <div class="song-info">
+              <img src="${song.cover_art}" alt="${song.title} cover" class="song-cover">
+              <div>
+                <h3 class="song-title">${song.title}</h3>
+                <p class="song-artist">${song.artist} • ${song.album}</p>
+              </div>
+            </div>
+            <span class="song-duration">${song.duration}</span>
+          `;
+          modalBody.appendChild(songItem);
+        });
+      });
+
+
 
     container.appendChild(card);
   });
@@ -56,12 +87,12 @@ closeModal.addEventListener("click", () => {
   modal.style.display = "none";
 });
 
-// Optional: click outside to close modal
+
 window.addEventListener("click", (e) => {
   if (e.target === modal) modal.style.display = "none";
 });
 
-createPlaylistCards(data.playlists);
+// createPlaylistCards(playlists);
 
 
 
