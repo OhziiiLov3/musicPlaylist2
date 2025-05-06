@@ -398,6 +398,16 @@ body {
   .dark-mode .song-item {
     border-color: #374151;
   }
+
+  .card-like-icon.liked {
+    color: red;
+    transition: color 0.2s;
+    cursor: pointer;
+  }
+  .card-like-icon {
+    cursor: pointer;
+  }
+  
   
 
 /* Footer */

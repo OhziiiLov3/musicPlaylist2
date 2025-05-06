@@ -19,17 +19,24 @@ const playlistImage = document.getElementById("playlistImage");
 const playlistName = document.getElementById("playlistName");
 const playlistCreator = document.getElementById("playlistCreator");
 
-// Fetch JSON data
-fetch('data/data.json')
-  .then(response => response.json())
-  .then(data => {
-    const playlists = data.playlists; 
-    createPlaylistCards(playlists);
-  })
-  .catch(error => console.error('Error fetching data:', error));
+// Fetch JSON data from data.json file
+// fetch('data/data.json')
+//   .then(response => response.json())
+//   .then(data => {
+//     const playlists = data.playlists; 
+//     createPlaylistCards(playlists);
+//   })
+//   .catch(error => console.error('Error fetching data:', error));
+
+
+const likedPlaylists = []; // array to track liked playlist IDs as an array
+
+
 
 const createPlaylistCards = (playlists) => {
   const container = document.querySelector(".playlist-cards");
+  container.innerHTML = ""; 
+
   playlists.forEach((playlist) => {
     const card = document.createElement("div");
     card.className = "card";
@@ -44,11 +51,36 @@ const createPlaylistCards = (playlists) => {
         <p class="card-text">${playlist.playlist_creator}</p>
         <div class="card-review">
           <i class="fa-regular fa-heart card-like-icon"></i>
-          <span>${playlist.likeCount}</span>
+          <span class="like-count">${playlist.likeCount}</span>
         </div>
       </div>
     `;
 
+      // Like icon logic
+      const likeIcon = card.querySelector(".card-like-icon");
+      const likeCountSpan = card.querySelector(".like-count");
+  
+      likeIcon.addEventListener("click", (e) => {
+        e.stopPropagation(); // Prevent opening modal when clicking like
+  
+        const isLiked = likedPlaylists.includes(playlist.playlistID);
+  
+        if (isLiked) {
+          playlist.likeCount--;
+          likedPlaylists.splice(likedPlaylists.indexOf(playlist.playlistID), 1);
+          likeIcon.classList.remove("fa-solid", "liked");
+          likeIcon.classList.add("fa-regular");
+        } else {
+          playlist.likeCount++;
+          likedPlaylists.push(playlist.playlistID);
+          likeIcon.classList.remove("fa-regular");
+          likeIcon.classList.add("fa-solid", "liked");
+        }
+  
+        likeCountSpan.textContent = playlist.likeCount.toString();
+
+        localStorage.setItem('playlists', JSON.stringify(playlists));
+      });
 
     card.addEventListener("click", () => {
         playlistImage.src = playlist.playlist_art;
@@ -77,11 +109,27 @@ const createPlaylistCards = (playlists) => {
         });
       });
 
-
-
     container.appendChild(card);
   });
 };
+
+// Load playlists from localStorage or fetch from file
+let playlists = [];
+const storedData = localStorage.getItem('playlists');
+if (storedData) {
+  playlists = JSON.parse(storedData);
+  createPlaylistCards(playlists);
+} else {
+  fetch('data/data.json')
+    .then(response => response.json())
+    .then(data => {
+      playlists = data.playlists;
+      localStorage.setItem('playlists', JSON.stringify(playlists)); // Save initial data
+      createPlaylistCards(playlists);
+    })
+    .catch(error => console.error('Error fetching data:', error));
+}
+
 
 closeModal.addEventListener("click", () => {
   modal.style.display = "none";
