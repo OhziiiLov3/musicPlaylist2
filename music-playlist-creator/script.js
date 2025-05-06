@@ -1,14 +1,40 @@
 
 // navbar -> light/dark mode
+// const toggleBtn = document.getElementById("mode-toggle");
+// const body = document.body;
+
+// toggleBtn.addEventListener("click", () => {
+//   body.classList.toggle("dark-mode");
+//   toggleBtn.innerHTML = body.classList.contains("dark-mode")
+//     ? '<i class="fa-solid fa-sun"></i>'
+//     : '<i class="fa-solid fa-moon"></i>';
+// });
+
+// Local storage for dark mode
 const toggleBtn = document.getElementById("mode-toggle");
 const body = document.body;
 
+// Load saved mode from localStorage
+const savedMode = localStorage.getItem("theme");
+if (savedMode === "dark") {
+  body.classList.add("dark-mode");
+  toggleBtn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+} else {
+  toggleBtn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+}
+
 toggleBtn.addEventListener("click", () => {
-  body.classList.toggle("dark-mode");
-  toggleBtn.innerHTML = body.classList.contains("dark-mode")
+  const isDarkMode = body.classList.toggle("dark-mode");
+
+  // Save to localStorage
+  localStorage.setItem("theme", isDarkMode ? "dark" : "light");
+
+  // Update icon
+  toggleBtn.innerHTML = isDarkMode
     ? '<i class="fa-solid fa-sun"></i>'
     : '<i class="fa-solid fa-moon"></i>';
 });
+
 
 
 
@@ -82,32 +108,56 @@ const createPlaylistCards = (playlists) => {
         localStorage.setItem('playlists', JSON.stringify(playlists));
       });
 
-    card.addEventListener("click", () => {
+      card.addEventListener("click", () => {
         playlistImage.src = playlist.playlist_art;
         playlistName.textContent = playlist.playlist_name;
         playlistCreator.textContent = `created by ${playlist.playlist_creator}`;
         modal.style.display = "flex";
       
-        // Add playlist songs 
-        const modalBody = modal.querySelector(".modal-body");
-        modalBody.innerHTML = ""; 
+        // Save reference to current playlist for shuffling
+        const currentPlaylist = playlist;
       
-        playlist.songs.forEach(song => {
-          const songItem = document.createElement("div");
-          songItem.classList.add("song-item");
-          songItem.innerHTML = `
-            <div class="song-info">
-              <img src="${song.cover_art}" alt="${song.title} cover" class="song-cover">
-              <div>
-                <h3 class="song-title">${song.title}</h3>
-                <p class="song-artist">${song.artist} • ${song.album}</p>
+        const modalBody = modal.querySelector(".modal-body");
+      
+        // Helper function to render songs
+        const renderSongs = (songs) => {
+          modalBody.innerHTML = "";
+          songs.forEach(song => {
+            const songItem = document.createElement("div");
+            songItem.classList.add("song-item");
+            songItem.innerHTML = `
+              <div class="song-info">
+                <img src="${song.cover_art}" alt="${song.title} cover" class="song-cover">
+                <div>
+                  <h3 class="song-title">${song.title}</h3>
+                  <p class="song-artist">${song.artist} • ${song.album}</p>
+                </div>
               </div>
-            </div>
-            <span class="song-duration">${song.duration}</span>
-          `;
-          modalBody.appendChild(songItem);
-        });
+              <span class="song-duration">${song.duration}</span>
+            `;
+            modalBody.appendChild(songItem);
+          });
+        };
+ 
+        renderSongs(currentPlaylist.songs);
+      
+ 
+        const shuffleButton = document.getElementById("shuffleButton");
+        shuffleButton.onclick = () => {
+          const songs = currentPlaylist.songs;
+      
+          // Fisher-Yates shuffle - from google
+          for (let i = songs.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [songs[i], songs[j]] = [songs[j], songs[i]];
+          }
+      
+          
+          renderSongs(songs);
+          localStorage.setItem("playlists", JSON.stringify(playlists));
+        };
       });
+      ;
 
     container.appendChild(card);
   });

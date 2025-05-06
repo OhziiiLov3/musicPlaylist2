@@ -421,6 +421,9 @@ body {
   color: #6b7280;
 }
 
+.dark-mode .footer{
+    color: var(--bg-light);
+}
 
 /* Navbar Responsive */
 @media (max-width: 600px) {
