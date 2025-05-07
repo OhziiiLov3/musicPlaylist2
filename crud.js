@@ -1,30 +1,37 @@
-// crud.js
-
-const playlistFormContainer = document.getElementById('playlistFormContainer');
-const playlistForm = document.getElementById('playlistForm');
-const addPlaylistBtn = document.getElementById('addPlaylistBtn');
-const addSongBtn = document.getElementById('addSongBtn');
-const songList = document.getElementById('songList');
-const playlistContainer = document.getElementById('playlistContainer');
-
-let editingPlaylist = null; // To store the playlist being edited, if any
 let playlists = [];
+let editingPlaylist = null;
 
-// Load playlists from data.json (mocked for now)
+// Safe references to DOM elements
+const playlistContainer = document.getElementById('playlistContainer');
+const playlistForm = document.getElementById('playlistForm');
+const playlistFormContainer = document.getElementById('playlistFormContainer');
+const songList = document.getElementById('songList');
+
+// Load playlists from localStorage or fetch default
 async function loadPlaylists() {
-  try {
-    const response = await fetch('/music-playlist-creator/data/data.json');
-    if (!response.ok) throw new Error('Failed to load playlists');
+  const savedPlaylists = localStorage.getItem('playlists');
+  if (savedPlaylists) {
+    playlists = JSON.parse(savedPlaylists);
+  } else {
+    const response = await fetch('./data/data.json');
     const data = await response.json();
     playlists = data.playlists;
+  }
+
+  if (playlistContainer) {
     renderPlaylists();
-  } catch (error) {
-    console.error('Error loading playlists:', error);
   }
 }
 
-// Render playlists
+// Save playlists to localStorage
+function savePlaylists() {
+  localStorage.setItem('playlists', JSON.stringify(playlists));
+}
+
+// Render playlists to the page
 function renderPlaylists() {
+  if (!playlistContainer) return;
+
   playlistContainer.innerHTML = playlists.map(playlist => `
     <div class="playlist-card" data-playlist-id="${playlist.playlistID}">
       <img src="${playlist.playlist_art}" alt="${playlist.playlist_name}">
@@ -37,7 +44,6 @@ function renderPlaylists() {
     </div>
   `).join('');
 
-  // Attach event listeners to edit and delete buttons
   document.querySelectorAll('.edit-btn').forEach(button => {
     button.addEventListener('click', handleEditPlaylist);
   });
@@ -45,89 +51,86 @@ function renderPlaylists() {
   document.querySelectorAll('.delete-btn').forEach(button => {
     button.addEventListener('click', handleDeletePlaylist);
   });
+
+  savePlaylists();
 }
 
-// Handle adding a new song input field
-addSongBtn.addEventListener('click', () => {
-  const songInputHTML = `
-    <div class="song-input">
-      <input type="text" name="songTitle" placeholder="Song Title" required />
-      <input type="text" name="songArtist" placeholder="Artist" required />
-      <input type="text" name="songDuration" placeholder="Duration" required />
-    </div>
-  `;
-  songList.insertAdjacentHTML('beforeend', songInputHTML);
-});
+// Handle playlist form submission
+if (playlistForm) {
+  playlistForm.addEventListener('submit', (event) => {
+    event.preventDefault();
 
-// Handle form submission for adding/editing playlist
-playlistForm.addEventListener('submit', (event) => {
-  event.preventDefault();
+    const playlistName = document.getElementById('playlistName').value;
+    const playlistAuthor = document.getElementById('playlistAuthor').value;
 
-  const playlistName = document.getElementById('playlistName').value;
-  const playlistAuthor = document.getElementById('playlistAuthor').value;
-  const songInputs = songList.querySelectorAll('.song-input');
-  const songs = Array.from(songInputs).map(input => ({
-    title: input.querySelector('[name="songTitle"]').value,
-    artist: input.querySelector('[name="songArtist"]').value,
-    duration: input.querySelector('[name="songDuration"]').value,
-  }));
+    const songInputs = songList.querySelectorAll('.song-input');
+    const songs = Array.from(songInputs).map(input => ({
+      title: input.querySelector('[name="songTitle"]').value,
+      artist: input.querySelector('[name="songArtist"]').value,
+      duration: input.querySelector('[name="songDuration"]').value,
+    }));
 
-  const newPlaylist = {
-    playlist_name: playlistName,
-    playlist_creator: playlistAuthor,
-    playlist_art: 'https://picsum.photos/200',
-    songs: songs,
-    playlistID: editingPlaylist ? editingPlaylist.playlistID : playlists.length + 1,
-  };
+    const newPlaylist = {
+      playlist_name: playlistName,
+      playlist_creator: playlistAuthor,
+      playlist_art: 'https://picsum.photos/200',
+      songs: songs,
+      playlistID: editingPlaylist ? editingPlaylist.playlistID : playlists.length + 1,
+    };
 
-  if (editingPlaylist) {
-    playlists = playlists.map(playlist =>
-      playlist.playlistID === editingPlaylist.playlistID ? newPlaylist : playlist
-    );
-    editingPlaylist = null;
-  } else {
-    playlists.push(newPlaylist);
-  }
+    if (editingPlaylist) {
+      playlists = playlists.map(playlist =>
+        playlist.playlistID === editingPlaylist.playlistID ? newPlaylist : playlist
+      );
+      editingPlaylist = null;
+    } else {
+      playlists.push(newPlaylist);
+    }
 
-  renderPlaylists();
-  playlistForm.reset();
-  playlistFormContainer.style.display = 'none';
-});
-
-// Handle Edit Playlist
-function handleEditPlaylist(event) {
-  const playlistID = event.target.closest('.playlist-card').dataset.playlistId;
-  editingPlaylist = playlists.find(playlist => playlist.playlistID == playlistID);
-  
-  document.getElementById('playlistName').value = editingPlaylist.playlist_name;
-  document.getElementById('playlistAuthor').value = editingPlaylist.playlist_creator;
-  songList.innerHTML = editingPlaylist.songs.map(song => `
-    <div class="song-input">
-      <input type="text" name="songTitle" value="${song.title}" required />
-      <input type="text" name="songArtist" value="${song.artist}" required />
-      <input type="text" name="songDuration" value="${song.duration}" required />
-    </div>
-  `).join('');
-  
-  document.getElementById('formTitle').innerText = 'Edit Playlist';
-  playlistFormContainer.style.display = 'block';
+    renderPlaylists();
+    playlistForm.reset();
+    playlistFormContainer.style.display = 'none';
+  });
 }
 
-// Handle Delete Playlist
+// Handle delete button
 function handleDeletePlaylist(event) {
   const playlistID = event.target.closest('.playlist-card').dataset.playlistId;
   playlists = playlists.filter(playlist => playlist.playlistID != playlistID);
   renderPlaylists();
 }
 
-// Handle Add New Playlist button
-addPlaylistBtn.addEventListener('click', () => {
-  editingPlaylist = null;
-  playlistForm.reset();
-  songList.innerHTML = '';
-  document.getElementById('formTitle').innerText = 'Create Playlist';
-  playlistFormContainer.style.display = 'block';
-});
+// Optional: Define `handleEditPlaylist` if you're using edit functionality
+function handleEditPlaylist(event) {
+  const playlistID = event.target.closest('.playlist-card').dataset.playlistId;
+  const playlist = playlists.find(p => p.playlistID == playlistID);
+  if (!playlist) return;
 
-// Initial load
-loadPlaylists();
+  editingPlaylist = playlist;
+
+  // Pre-fill form
+  if (playlistForm) {
+    document.getElementById('playlistName').value = playlist.playlist_name;
+    document.getElementById('playlistAuthor').value = playlist.playlist_creator;
+
+    songList.innerHTML = '';
+    playlist.songs.forEach(song => {
+      const songInput = document.createElement('div');
+      songInput.className = 'song-input';
+      songInput.innerHTML = `
+        <input type="text" name="songTitle" value="${song.title}" placeholder="Song Title" required />
+        <input type="text" name="songArtist" value="${song.artist}" placeholder="Artist" required />
+        <input type="text" name="songDuration" value="${song.duration}" placeholder="Duration" required />
+      `;
+      songList.appendChild(songInput);
+    });
+
+    playlistFormContainer.style.display = 'block';
+    document.getElementById('formTitle').innerText = 'Edit Playlist';
+  }
+}
+
+// Initialize only if needed
+if (playlistContainer || playlistForm) {
+  loadPlaylists();
+}

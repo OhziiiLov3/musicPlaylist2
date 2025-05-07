@@ -1,10 +1,8 @@
 # Music Playlist Explorer
 
 **By:** Keith L. Baskerville Jr
-**Estimated Time Spent:**  5 hours
-**Deployed Application:** [Music Playlist Explorer Deployed Site](ADD_LINK_HERE)
-
----
+**Estimated Time Spent:**  5.5 hours
+**Deployed Application:** [Ampd Music Playlist](https://ampdmusic.netlify.app/)
 
 ## Application Features
 
