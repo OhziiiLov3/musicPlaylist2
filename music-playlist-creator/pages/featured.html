@@ -29,35 +29,28 @@
 
     <main>
       <div class="featured-container">
-        <!-- Left: Playlist Image and Info -->
         <div class="featured-left">
-          <img src="https://picsum.photos/id/34/500" alt="Featured Playlist Cover">
-          <div class="playlist-meta">
-            <h2>Sunday Chill</h2>
-            <p>Curated by Ampd</p>
-          </div>
+          <!-- JS will inject playlist image and meta here -->
         </div>
 
-        <!-- Right: Song List -->
         <div class="featured-right">
-          <div class="song-item">
-            <div class="song-info">
-              <img src="https://picsum.photos/id/101/100" alt="Song Cover">
-              <div class="song-details">
-                <h4>Easy Breeze</h4>
-                <p>Lo-Fi · 2:48</p>
-              </div>
-            </div>
-            <span class="song-duration">2:48</span>
-          </div>
-          <!-- Add more song-items here -->
+          <!-- JS will inject song list here -->
         </div>
       </div>
+
+
+      
+      <div style="text-align: center; margin-top: 1rem;">
+        <button id="shuffleFeatured" class="shuffle-button">Shuffle Featured Playlist</button>
+      </div>
     </main>
-    <footer class="footer"> 
-      <p>&copy; 2025 Ampd. All rights reserved.</p>
-    </footer>
+
+    <!-- Modal for playlist view -->
+  
+
+    <footer class="footer"></footer>
   </div>
+  <script src="/music-playlist-creator/featured.js"></script>
   <script src="/music-playlist-creator/script.js"></script>
 </body>
 </html>

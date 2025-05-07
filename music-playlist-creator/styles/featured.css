@@ -104,6 +104,32 @@ body.dark-mode .featured-left img {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); /* stronger shadow for contrast */
 }
 
+.shuffle-button {
+  background-color: var(--primary-color, #007aff); /* Use a vibrant primary color, can be customized */
+  color: #fff; /* Text color */
+  font-size: 1rem; /* Slightly larger font for readability */
+  padding: 0.8rem 2rem; /* Padding around the text */
+  border-radius: 2rem; /* Rounded corners */
+  border: none; /* Remove default border */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s, transform 0.2s; /* Smooth transition for color and scale */
+  font-weight: 600; /* Slightly bold text */
+}
+
+.shuffle-button:hover {
+  background-color: var(--hover-color, #005bb5); /* Darker shade for hover */
+  transform: scale(1.05); /* Subtle scaling effect on hover */
+}
+
+.shuffle-button:focus {
+  outline: none; /* Remove focus outline for a cleaner look */
+}
+
+.shuffle-button:active {
+  background-color: var(--active-color, #004494); /* Even darker shade for active state */
+}
+
+
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
   .featured-container {

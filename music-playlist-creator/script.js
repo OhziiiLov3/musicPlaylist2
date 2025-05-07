@@ -1,16 +1,5 @@
 
 // navbar -> light/dark mode
-
-// const toggleBtn = document.getElementById("mode-toggle");
-// const body = document.body;
-
-// toggleBtn.addEventListener("click", () => {
-//   body.classList.toggle("dark-mode");
-//   toggleBtn.innerHTML = body.classList.contains("dark-mode")
-//     ? '<i class="fa-solid fa-sun"></i>'
-//     : '<i class="fa-solid fa-moon"></i>';
-// });
-
 // Local storage for dark mode
 const toggleBtn = document.getElementById("mode-toggle");
 const body = document.body;
@@ -37,8 +26,6 @@ toggleBtn.addEventListener("click", () => {
 });
 
 
-
-
 // create cards for platlist 
 const modal = document.getElementById("playlistModal");
 const closeModal = modal.querySelector(".close");
@@ -46,14 +33,6 @@ const playlistImage = document.getElementById("playlistImage");
 const playlistName = document.getElementById("playlistName");
 const playlistCreator = document.getElementById("playlistCreator");
 
-// Fetch JSON data from data.json file
-// fetch('data/data.json')
-//   .then(response => response.json())
-//   .then(data => {
-//     const playlists = data.playlists; 
-//     createPlaylistCards(playlists);
-//   })
-//   .catch(error => console.error('Error fetching data:', error));
 
 
 const likedPlaylists = []; // array to track liked playlist IDs as an array
@@ -110,9 +89,6 @@ const createPlaylistCards = (playlists) => {
       });
 
       card.addEventListener("click", () => {
-        // if (!e.currentTarget.classList.contains("card")) return;
-
-
         playlistImage.src = playlist.playlist_art;
         playlistName.textContent = playlist.playlist_name;
         playlistCreator.textContent = `created by ${playlist.playlist_creator}`;
@@ -194,13 +170,7 @@ window.addEventListener("click", (e) => {
   if (e.target === modal) modal.style.display = "none";
 });
 
-// createPlaylistCards(playlists);
 
-// document.querySelectorAll(".nav-links a").forEach(link => {
-//     link.addEventListener("click", (e) => {
-//       e.stopPropagation(); 
-//     });
-//   });
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -214,3 +184,27 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log(footer);
   });
   
+
+
+
+//   old code before refactor 
+
+// Fetch JSON data from data.json file
+// fetch('data/data.json')
+//   .then(response => response.json())
+//   .then(data => {
+//     const playlists = data.playlists; 
+//     createPlaylistCards(playlists);
+//   })
+//   .catch(error => console.error('Error fetching data:', error));
+
+// const toggleBtn = document.getElementById("mode-toggle");
+// const body = document.body;
+
+// toggleBtn.addEventListener("click", () => {
+//   body.classList.toggle("dark-mode");
+//   toggleBtn.innerHTML = body.classList.contains("dark-mode")
+//     ? '<i class="fa-solid fa-sun"></i>'
+//     : '<i class="fa-solid fa-moon"></i>';
+// });
+
