@@ -1,5 +1,6 @@
 
 // navbar -> light/dark mode
+
 // const toggleBtn = document.getElementById("mode-toggle");
 // const body = document.body;
 
@@ -87,7 +88,7 @@ const createPlaylistCards = (playlists) => {
       const likeCountSpan = card.querySelector(".like-count");
   
       likeIcon.addEventListener("click", (e) => {
-        e.stopPropagation(); // Prevent opening modal when clicking like
+        e.stopPropagation(); 
   
         const isLiked = likedPlaylists.includes(playlist.playlistID);
   
@@ -109,12 +110,15 @@ const createPlaylistCards = (playlists) => {
       });
 
       card.addEventListener("click", () => {
+        // if (!e.currentTarget.classList.contains("card")) return;
+
+
         playlistImage.src = playlist.playlist_art;
         playlistName.textContent = playlist.playlist_name;
         playlistCreator.textContent = `created by ${playlist.playlist_creator}`;
         modal.style.display = "flex";
       
-        // Save reference to current playlist for shuffling
+
         const currentPlaylist = playlist;
       
         const modalBody = modal.querySelector(".modal-body");
@@ -192,9 +196,21 @@ window.addEventListener("click", (e) => {
 
 // createPlaylistCards(playlists);
 
+// document.querySelectorAll(".nav-links a").forEach(link => {
+//     link.addEventListener("click", (e) => {
+//       e.stopPropagation(); 
+//     });
+//   });
 
 
-const footer = document.querySelector(".footer");
-console.log(footer)
-const currentYear = new Date().getFullYear();
-footer.innerHTML = `&copy; ${currentYear} Ampd. All rights reserved.`;
+document.addEventListener('DOMContentLoaded', () => {
+    const footer = document.querySelector(".footer");
+    const currentYear = new Date().getFullYear();
+    if (footer) {
+      footer.innerHTML = `&copy; ${currentYear} Ampd. All rights reserved.`;
+    } else {
+      console.log("Footer not found");
+    }
+    console.log(footer);
+  });
+  
