@@ -43,13 +43,42 @@
       <div style="text-align: center; margin-top: 1rem;">
         <button id="shuffleFeatured" class="shuffle-button">Shuffle Featured Playlist</button>
       </div>
+      <!-- bouns feature -->
+       <!-- Playlist Management Section -->
+<div class="playlist-management">
+  <h2>Manage Your Playlists</h2>
+  <button id="addPlaylistBtn" class="playlist-button">Add New Playlist</button>
+
+  <!-- Add/Edit Playlist Form -->
+  <div id="playlistFormContainer" class="form-container" style="display: none;">
+    <form id="playlistForm">
+      <h3 id="formTitle">Create Playlist</h3>
+
+      <label for="playlistName">Playlist Name</label>
+      <input type="text" id="playlistName" required placeholder="Enter Playlist Name">
+
+      <label for="playlistAuthor">Playlist Author</label>
+      <input type="text" id="playlistAuthor" required placeholder="Enter Author Name">
+
+      <h4>Add Songs</h4>
+      <div id="songList">
+        <!-- Dynamic Song Inputs -->
+      </div>
+      <button type="button" id="addSongBtn">Add Song</button>
+      
+      <button type="submit" id="submitPlaylistBtn" class="playlist-button">Save Playlist</button>
+    </form>
+  </div>
+</div>
+
     </main>
 
-    <!-- Modal for playlist view -->
+
   
 
     <footer class="footer"></footer>
   </div>
+  <script src="/music-playlist-creator/crud.js"></script>
   <script src="/music-playlist-creator/featured.js"></script>
   <script src="/music-playlist-creator/script.js"></script>
 </body>
