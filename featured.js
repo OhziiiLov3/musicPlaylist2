@@ -6,7 +6,7 @@ const shuffleBtn = document.getElementById('shuffleFeatured');
 
 async function loadData() {
   try {
-    const response = await fetch('/music-playlist-creator/data/data.json');
+    const response = await fetch('/data/data.json');
     if (!response.ok) throw new Error('Failed to load data');
     const data = await response.json();
     return data.playlists;
