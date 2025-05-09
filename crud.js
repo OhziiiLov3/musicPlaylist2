@@ -1,136 +1,113 @@
-let playlists = [];
-let editingPlaylist = null;
+// DOM references for CRUD operations
+const addPlaylistForm = document.getElementById("addPlaylistForm");
+const playlistNameInput = document.getElementById("newPlaylistName");
+const playlistCreatorInput = document.getElementById("newPlaylistCreator");
+const songList = document.getElementById("songList");
+const addSongButton = document.getElementById("addSongButton");
+const playlistContainer = document.querySelector(".playlist-cards");
 
-// Safe references to DOM elements
-const playlistContainer = document.getElementById('playlistContainer');
-const playlistForm = document.getElementById('playlistForm');
-const playlistFormContainer = document.getElementById('playlistFormContainer');
-const songList = document.getElementById('songList');
+// Handle adding new songs to the playlist
+addSongButton.addEventListener("click", (event) => {
+  event.preventDefault();
+  const songTitleInput = document.createElement("input");
+  songTitleInput.placeholder = "Song Title";
+  
+  const songArtistInput = document.createElement("input");
+  songArtistInput.placeholder = "Artist";
+  
+  const songDurationInput = document.createElement("input");
+  songDurationInput.placeholder = "Duration";
 
-// Load playlists from localStorage or fetch default
-async function loadPlaylists() {
-  const savedPlaylists = localStorage.getItem('playlists');
-  if (savedPlaylists) {
-    playlists = JSON.parse(savedPlaylists);
-  } else {
-    const response = await fetch('./data/data.json');
-    const data = await response.json();
-    playlists = data.playlists;
-  }
+  const songInputContainer = document.createElement("div");
+  songInputContainer.appendChild(songTitleInput);
+  songInputContainer.appendChild(songArtistInput);
+  songInputContainer.appendChild(songDurationInput);
+  
+  songList.appendChild(songInputContainer);
+});
 
-  if (playlistContainer) {
-    renderPlaylists();
-  }
-}
+// Handle creating a new playlist
+addPlaylistForm.addEventListener("submit", (event) => {
+  event.preventDefault();
 
-// Save playlists to localStorage
-function savePlaylists() {
-  localStorage.setItem('playlists', JSON.stringify(playlists));
-}
+  const newPlaylist = {
+    playlistID: Date.now(), // Simple unique ID using timestamp
+    playlist_name: playlistNameInput.value,
+    playlist_creator: playlistCreatorInput.value,
+    playlist_art: 'https://picsum.photos/200',
+    songs: Array.from(songList.children).map((songInput) => ({
+      title: songInput.querySelector("input[placeholder='Song Title']").value,
+      artist: songInput.querySelector("input[placeholder='Artist']").value,
+      duration: songInput.querySelector("input[placeholder='Duration']").value,
+    })),
+    likeCount: 0
+  };
 
-// Render playlists to the page
-function renderPlaylists() {
-  if (!playlistContainer) return;
+  // Add new playlist to the local storage and refresh the page
+  let playlists = JSON.parse(localStorage.getItem("playlists")) || [];
+  playlists.push(newPlaylist);
+  localStorage.setItem("playlists", JSON.stringify(playlists));
 
-  playlistContainer.innerHTML = playlists.map(playlist => `
-    <div class="playlist-card" data-playlist-id="${playlist.playlistID}">
-      <img src="${playlist.playlist_art}" alt="${playlist.playlist_name}">
-      <div>
-        <h3>${playlist.playlist_name}</h3>
-        <p>By ${playlist.playlist_creator}</p>
-      </div>
-      <button class="edit-btn">Edit</button>
-      <button class="delete-btn">Delete</button>
-    </div>
-  `).join('');
+  // Refresh the playlist cards display
+  createPlaylistCards(playlists);
+  addPlaylistForm.reset();
+  songList.innerHTML = ""; // Clear song inputs after submission
+});
 
-  document.querySelectorAll('.edit-btn').forEach(button => {
-    button.addEventListener('click', handleEditPlaylist);
-  });
+// Handle editing an existing playlist
+function editPlaylist(playlistID) {
+  const playlists = JSON.parse(localStorage.getItem("playlists")) || [];
+  const playlist = playlists.find(p => p.playlistID === playlistID);
 
-  document.querySelectorAll('.delete-btn').forEach(button => {
-    button.addEventListener('click', handleDeletePlaylist);
-  });
+  if (playlist) {
+    playlistNameInput.value = playlist.playlist_name;
+    playlistCreatorInput.value = playlist.playlist_creator;
+    songList.innerHTML = ''; // Clear previous song inputs
 
-  savePlaylists();
-}
-
-// Handle playlist form submission
-if (playlistForm) {
-  playlistForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-
-    const playlistName = document.getElementById('playlistName').value;
-    const playlistAuthor = document.getElementById('playlistAuthor').value;
-
-    const songInputs = songList.querySelectorAll('.song-input');
-    const songs = Array.from(songInputs).map(input => ({
-      title: input.querySelector('[name="songTitle"]').value,
-      artist: input.querySelector('[name="songArtist"]').value,
-      duration: input.querySelector('[name="songDuration"]').value,
-    }));
-
-    const newPlaylist = {
-      playlist_name: playlistName,
-      playlist_creator: playlistAuthor,
-      playlist_art: 'https://picsum.photos/200',
-      songs: songs,
-      playlistID: editingPlaylist ? editingPlaylist.playlistID : playlists.length + 1,
-    };
-
-    if (editingPlaylist) {
-      playlists = playlists.map(playlist =>
-        playlist.playlistID === editingPlaylist.playlistID ? newPlaylist : playlist
-      );
-      editingPlaylist = null;
-    } else {
-      playlists.push(newPlaylist);
-    }
-
-    renderPlaylists();
-    playlistForm.reset();
-    playlistFormContainer.style.display = 'none';
-  });
-}
-
-// Handle delete button
-function handleDeletePlaylist(event) {
-  const playlistID = event.target.closest('.playlist-card').dataset.playlistId;
-  playlists = playlists.filter(playlist => playlist.playlistID != playlistID);
-  renderPlaylists();
-}
-
-// Optional: Define `handleEditPlaylist` if you're using edit functionality
-function handleEditPlaylist(event) {
-  const playlistID = event.target.closest('.playlist-card').dataset.playlistId;
-  const playlist = playlists.find(p => p.playlistID == playlistID);
-  if (!playlist) return;
-
-  editingPlaylist = playlist;
-
-  // Pre-fill form
-  if (playlistForm) {
-    document.getElementById('playlistName').value = playlist.playlist_name;
-    document.getElementById('playlistAuthor').value = playlist.playlist_creator;
-
-    songList.innerHTML = '';
-    playlist.songs.forEach(song => {
-      const songInput = document.createElement('div');
-      songInput.className = 'song-input';
-      songInput.innerHTML = `
-        <input type="text" name="songTitle" value="${song.title}" placeholder="Song Title" required />
-        <input type="text" name="songArtist" value="${song.artist}" placeholder="Artist" required />
-        <input type="text" name="songDuration" value="${song.duration}" placeholder="Duration" required />
+    playlist.songs.forEach((song) => {
+      const songInputContainer = document.createElement("div");
+      songInputContainer.innerHTML = `
+        <input type="text" placeholder="Song Title" value="${song.title}" />
+        <input type="text" placeholder="Artist" value="${song.artist}" />
+        <input type="text" placeholder="Duration" value="${song.duration}" />
       `;
-      songList.appendChild(songInput);
+      songList.appendChild(songInputContainer);
     });
 
-    playlistFormContainer.style.display = 'block';
-    document.getElementById('formTitle').innerText = 'Edit Playlist';
+    // Handle save changes after editing
+    addPlaylistForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      playlist.playlist_name = playlistNameInput.value;
+      playlist.playlist_creator = playlistCreatorInput.value;
+      playlist.songs = Array.from(songList.children).map((songInput) => ({
+        title: songInput.querySelector("input[placeholder='Song Title']").value,
+        artist: songInput.querySelector("input[placeholder='Artist']").value,
+        duration: songInput.querySelector("input[placeholder='Duration']").value,
+      }));
+
+      // Update playlists in localStorage
+      localStorage.setItem("playlists", JSON.stringify(playlists));
+
+      createPlaylistCards(playlists);
+      addPlaylistForm.reset();
+      songList.innerHTML = "";
+    });
   }
 }
 
-// Initialize only if needed
-if (playlistContainer || playlistForm) {
-  loadPlaylists();
+// Handle deleting a playlist
+function deletePlaylist(playlistID) {
+  let playlists = JSON.parse(localStorage.getItem("playlists")) || [];
+  playlists = playlists.filter(p => p.playlistID !== playlistID);
+
+  // Update playlists in localStorage
+  localStorage.setItem("playlists", JSON.stringify(playlists));
+
+  // Refresh the playlist cards display
+  createPlaylistCards(playlists);
 }
+
+// Export functions to make them accessible from other files if necessary
+window.editPlaylist = editPlaylist;
+window.deletePlaylist = deletePlaylist;

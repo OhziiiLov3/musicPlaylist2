@@ -5,7 +5,10 @@
 **Deployed Application:** [Ampd Music Playlist](https://ampdmusic.netlify.app/)
 
 ## Application Features
-
+### Feature Page 
+![Ampd- Featured Page](https://i.imgur.com/ZGC5QRI.png)
+### Playlist Page
+![Ampd- Plalist Page](https://i.imgur.com/wkxf3Z9.png)
 ### CORE FEATURES
 
 * **Display Playlists**

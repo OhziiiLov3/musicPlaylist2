@@ -144,7 +144,7 @@ const createPlaylistCards = (playlists) => {
 };
 
 // Load playlists from localStorage or fetch from file
-let playlists = [];
+// let playlists = [];
 const storedData = localStorage.getItem('playlists');
 if (storedData) {
   playlists = JSON.parse(storedData);
@@ -183,6 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     console.log(footer);
   });
+  
   
 
 
